@@ -36,7 +36,7 @@ void notify_binders(DhaumBits pushed) {
     DhaumBinder & binder = binders[i];
     touchstatus_e touched = ((binder.bits & binder.mask) == (pushed & binder.mask)) ? TOUCHED : UNTOUCHED;
     if (touched == TOUCHED)
-      binder.touched = TOUCHED;
+      binder.setTouched(TOUCHED);
   }
 }
 
@@ -49,9 +49,9 @@ void setup() {
 
   // Reset binders
   for (int i = 0; i < BINDERNB; ++i) {
-    binders[i].touched = UNTOUCHED;
-    binders[i].debounce = 0;
-    binders[i].touched_filtered = UNTOUCHED;
+    binders[i].setTouched(UNTOUCHED);
+    binders[i].setDebounce(0);
+    binders[i].setTouchedFiltered(UNTOUCHED);
   }
 
   // Services begin
@@ -82,29 +82,31 @@ void loop() {
     DhaumBinder & binder = binders[i];
 
     // Apply filter
-    binder.debounce += (binder.touched == UNTOUCHED) ? -1 : 1;
-    if (binder.debounce > MAXDEBOUNCE)
-      binder.debounce = MAXDEBOUNCE;
-    if (binder.debounce < 0)
-      binder.debounce = 0;
+    int8_t debounce = binder.getDebounce();
+    debounce += (binder.touched() == UNTOUCHED) ? -1 : 1;
+    if (debounce > MAXDEBOUNCE)
+      debounce = MAXDEBOUNCE;
+    if (debounce < 0)
+      debounce = 0;
 
     // Reset touched status for next loop
-    binder.touched = UNTOUCHED;
+    binder.setTouched(UNTOUCHED);
 
     // Debug filter 22h
-    print_hex("Filer22h ", binder.debounce, ((serial_debug & DEBUG_FILTERx22) && (binder.bits == 0x22)));
+    print_hex("Filer22h ", binder.getDebounce(), ((serial_debug & DEBUG_FILTERx22) && (binder.bits == 0x22)));
 
     // Trigger events
-    if (binder.debounce == MAXDEBOUNCE && binder.touched_filtered == UNTOUCHED) {
-      MIDIUSB.note(1, binder.midi.note, binder.midi.octave, binder.midi.channel, binder.midi.velocity);
-      binder.touched_filtered = TOUCHED;
+    if (debounce == MAXDEBOUNCE && binder.touchedFiltered() == UNTOUCHED) {
+      MIDIUSB.note(1, binder.midi.getNote(), binder.midi.getOctave(), binder.midi.getChannel(), binder.midi.getVelocity());
+      binder.setTouchedFiltered(TOUCHED);
       print_hex("On ", binder.bits, (serial_debug & DEBUG_FILTERED_TOUCHES));
 
-    } else if (binder.debounce == 0 && binder.touched_filtered != UNTOUCHED) {
-      MIDIUSB.note(0, binder.midi.note, binder.midi.octave, binder.midi.channel, binder.midi.velocity);
-      binder.touched_filtered = UNTOUCHED;
+    } else if (debounce == 0 && binder.touchedFiltered() != UNTOUCHED) {
+      MIDIUSB.note(0, binder.midi.getNote(), binder.midi.getOctave(), binder.midi.getChannel(), binder.midi.getVelocity());
+      binder.setTouchedFiltered(UNTOUCHED);
       print_hex("Off ", binder.bits, (serial_debug & DEBUG_FILTERED_TOUCHES));
     }
+    binder.setDebounce(debounce);
   }
 
   // Wait for next loop
