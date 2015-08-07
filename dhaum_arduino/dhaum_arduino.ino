@@ -1,47 +1,45 @@
 #include "dhaum.h"
 
-// Objects
-static DhaumObject casserole(1);
-static DhaumObject pelote(2);
-static DhaumObject chat(6);
-static DhaumObject echelle(7);
+DhaumNotes extract_notes(DhaumBits snapshot) {
 
-// Sounds
-static DhaumMidi ronronnement(MidiNote_C);
-static DhaumMidi coup_de_casserole(MidiNote_D);
-static DhaumMidi nyan(MidiNote_E);
-static DhaumMidi cuisson(MidiNote_G);
-static DhaumMidi coq(MidiNote_B);
+	uint8_t DhaumVelocity[4] = {64, 55, 40, 80};
 
-// Binders
-DhaumBinder binders_data[] = {
+	MidiChannel channel = MidiChannel(snapshot & 0x100);
+	MidiOctave octave = (MidiOctave) (MIDIOCTAVE_OFFSET * (snapshot & (DhaumBits) 0x10 << 8));
+	uint8_t velocity = DhaumVelocity[snapshot & (DhaumBits) 0xF << 12];
+	// compute notes
 
-  DhaumBinder(
-    chat | pelote,
-    ronronnement
-  ),
+	/*
+	 * 8 bits of the snapshot have already been used
+	 * 17 are left
+	 * Let's compute 4 notes out of them
+	 *
+	 */
 
-  DhaumBinder(
-    casserole | chat,
-    coup_de_casserole
-  ),
+	DhaumNotes midinotes;
+	int8_t notes[4];
+	DhaumBits mask = (0xFF << 16);
+	int8_t nb_notes = 0;
+	for (int8_t i = 0; i < 4; i++) {
+		DhaumBits snapshot_extracted =  snapshot & (mask << 4*i);
+		if (snapshot_extracted == 0) {
+			notes[i] = -1;
+			continue;
+		} else if ( snapshot_extracted > 12 ) {
+			snapshot_extracted = snapshot_extracted - 12;
+		}
+		notes[i] = MidiNote(snapshot_extracted-1);
+    midinotes.count++;
+	}
 
-  DhaumBinder(
-    casserole | pelote,
-    cuisson
-  ),
+	midinotes.notes = (DhaumMidi*) malloc(nb_notes*sizeof(DhaumMidi));
+	int8_t j = 0;
+	for (int8_t i = 0; i < 4; i++) {
+		if (notes[i] > 0) {
+			midinotes.notes[j] = DhaumMidi((MidiNote) notes[i], octave, channel, velocity);
+		}
+	}
 
-  DhaumBinder(
-    casserole | echelle,
-    coq
-  ),
+  return midinotes;
 
-  DhaumBinder(
-    casserole | chat | pelote,
-    nyan
-   ),
-
-};
-
-uint16_t binders_size = (sizeof(binders_data)/sizeof(*binders_data));
-DhaumBinder * binders = binders_data;
+}

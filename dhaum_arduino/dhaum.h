@@ -3,17 +3,10 @@
 
 #include <Arduino.h>
 
+#define MIDIOCTAVE_OFFSET 24 // so we get 1 octave below C3 and 2 above B3
+
 typedef uint32_t DhaumBits;
 
-struct DhaumObject {
-  DhaumBits bits;
-  DhaumObject(uint8_t pad_nr) : bits(1 << (pad_nr-1)) {}
-  DhaumObject operator | (DhaumObject &other) {
-    DhaumObject res(other);
-    res.bits |= bits;
-    return res;
-  }
-};
 
 struct DhaumMidi {
   enum MidiNote note;
@@ -25,25 +18,10 @@ struct DhaumMidi {
     note(param_note), octave(param_octave), channel(param_channel), velocity(param_velocity) {}
 };
 
-typedef enum {
-  UNTOUCHED,
-  TOUCHED,
-} touchstatus_e;
-
-struct DhaumBinder {
-  DhaumBits bits;
-  DhaumBits mask;
-
-  DhaumMidi midi;
-
-  touchstatus_e touched;
-  int8_t debounce;
-  touchstatus_e touched_filtered;
-
-  DhaumBinder(DhaumObject obj, DhaumMidi param_midi, uint32_t param_mask = 0xffffffff) : bits(obj.bits), mask(param_mask), midi(param_midi) {}
+struct DhaumNotes {
+  DhaumMidi* notes;
+  uint8_t count = 0;
 };
 
-extern DhaumBinder * binders;
-extern uint16_t binders_size;
-
+extern DhaumNotes extract_notes(DhaumBits snapshot);
 #endif
