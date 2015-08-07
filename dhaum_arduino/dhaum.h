@@ -19,12 +19,12 @@ struct DhaumMidi {
   uint8_t packed_data[4];
   DhaumMidi(enum MidiNote note, enum MidiOctave octave = MidiOctave_3, MidiChannel channel = MidiChannel_1, uint8_t velocity = 64) {
     packed_data[0] = note;
-    packed_data[1] = octave;
+    packed_data[1] = octave / 12;
     packed_data[2] = channel;
     packed_data[3] = velocity;
   }
   enum MidiNote getNote() { return (enum MidiNote)(packed_data[0]); }
-  enum MidiOctave getOctave() { return (enum MidiOctave)(packed_data[1]); }
+  enum MidiOctave getOctave() { return (enum MidiOctave)(12 * packed_data[1]); }
   enum MidiChannel getChannel() { return (enum MidiChannel)(packed_data[2]); }
   uint8_t getVelocity() { return packed_data[3]; };
 };
