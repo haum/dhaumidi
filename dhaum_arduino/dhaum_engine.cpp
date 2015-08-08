@@ -33,7 +33,7 @@ DhaumBits get_pads_snapshot() {
 }
 
 void notify_binders(DhaumBits pushed) {
-  for (int i = 0; i < BINDERNB; ++i) {
+  for (DhaumBinderIndex i = 0; i < BINDERNB; ++i) {
     DhaumBinder & binder = binders[i];
     touchstatus_e touched = ((binder.bits & binder.mask) == (pushed & binder.mask)) ? TOUCHED : UNTOUCHED;
     if (touched == TOUCHED)
@@ -79,7 +79,7 @@ void loop() {
   print_hex("0==", 0, (serial_debug & DEBUG_RAW_CODES));
 
   // For each binder
-  for (int i = 0; i < BINDERNB; ++i) {
+  for (DhaumBinderIndex i = 0; i < BINDERNB; ++i) {
     DhaumBinder & binder = binders[i];
 
     // Apply filter

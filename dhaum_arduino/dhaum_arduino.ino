@@ -43,5 +43,5 @@ DhaumBinder binders_data[] = {
 
 };
 
-uint16_t binders_size = (sizeof(binders_data)/sizeof(*binders_data));
+DhaumBinderIndex binders_size = (sizeof(binders_data)/sizeof(*binders_data));
 DhaumBinder * binders = binders_data;
