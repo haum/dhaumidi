@@ -20,7 +20,8 @@ struct DhaumMidi {
 
 struct DhaumNotes {
   DhaumMidi* notes;
-  uint8_t count = 0;
+  uint8_t count;
+  DhaumNotes() : count(0) {}
 };
 
 extern DhaumNotes extract_notes(DhaumBits snapshot);
