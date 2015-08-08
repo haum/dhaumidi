@@ -53,8 +53,9 @@ struct DhaumBinderData {
   void setDebounce(int8_t debounce) { debounce_t_tf = (debounce_t_tf & 3) | (debounce << 2); }
 };
 
-extern DhaumBinderConf * binders_conf;
 extern DhaumBinderData * binders_data;
 extern DhaumBinderIndex binders_size;
+
+DhaumBinderConf get_binderconf_nr(DhaumBinderIndex i);
 
 #endif

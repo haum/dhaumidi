@@ -34,8 +34,8 @@ DhaumBits get_pads_snapshot() {
 
 void notify_binders(DhaumBits pushed) {
   for (DhaumBinderIndex i = 0; i < BINDERNB; ++i) {
-    DhaumBinderConf * binder_c = &binders_conf[i];
-    touchstatus_e touched = ((binder_c->bits & binder_c->mask) == (pushed & binder_c->mask)) ? TOUCHED : UNTOUCHED;
+    DhaumBinderConf binder_c = get_binderconf_nr(i);
+    touchstatus_e touched = ((binder_c.bits & binder_c.mask) == (pushed & binder_c.mask)) ? TOUCHED : UNTOUCHED;
     if (touched == TOUCHED) {
       DhaumBinderData * binder_d = &binders_data[i];
       binder_d->setTouched(TOUCHED);
@@ -64,7 +64,6 @@ void loop() {
     pinMode(L[i], INPUT);
     digitalWrite(L[i], LOW);
     notify_binders(pushed);
-    delay(1);
 
     // Debug raw codes
     print_hex("Code : ", pushed, ((serial_debug & DEBUG_RAW_CODES) && (pushed != (DhaumBits(1) << (i - 1)))));
@@ -75,7 +74,7 @@ void loop() {
 
   // For each binder
   for (DhaumBinderIndex i = 0; i < BINDERNB; ++i) {
-    DhaumBinderConf & binder_c = binders_conf[i];
+    DhaumBinderConf binder_c = get_binderconf_nr(i);
     DhaumBinderData & binder_d = binders_data[i];
 
     // Apply filter
@@ -105,12 +104,5 @@ void loop() {
     }
     binder_d.setDebounce(debounce);
   }
-
-  // Wait for next loop
-  while(loop_rdv > millis());
-  loop_rdv = millis() + 10;
-
-  // Flushes
-  MIDIUSB.flush();
 }
 
