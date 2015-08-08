@@ -34,13 +34,16 @@ typedef enum {
   TOUCHED,
 } touchstatus_e;
 
-struct DhaumBinder {
+struct DhaumBinderConf {
   DhaumBits bits;
   DhaumBits mask;
   DhaumMidi midi;
-  int8_t debounce_t_tf; // debounce (6), touched (1), touched filtered (1) packing
+  DhaumBinderConf(DhaumObject obj, DhaumMidi param_midi, uint32_t param_mask = 0xffffffff) : bits(obj.bits), mask(param_mask), midi(param_midi) {}
+};
 
-  DhaumBinder(DhaumObject obj, DhaumMidi param_midi, uint32_t param_mask = 0xffffffff) : bits(obj.bits), mask(param_mask), midi(param_midi) {}
+struct DhaumBinderData {
+  int8_t debounce_t_tf; // debounce (6), touched (1), touched filtered (1) packing
+  DhaumBinderData() : debounce_t_tf(0) {}
   touchstatus_e touched() { return ((debounce_t_tf & 1) == 1) ? TOUCHED : UNTOUCHED; }
   touchstatus_e touchedFiltered() { return ((debounce_t_tf & 2) == 2) ? TOUCHED : UNTOUCHED; }
   uint8_t getDebounce() { return (debounce_t_tf >> 2); }
@@ -49,7 +52,8 @@ struct DhaumBinder {
   void setDebounce(int8_t debounce) { debounce_t_tf = (debounce_t_tf & 3) | (debounce << 2); }
 };
 
-extern DhaumBinder * binders;
+extern DhaumBinderConf * binders_conf;
+extern DhaumBinderData * binders_data;
 extern uint16_t binders_size;
 
 #endif

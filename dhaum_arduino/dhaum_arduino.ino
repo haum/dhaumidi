@@ -14,34 +14,36 @@ static DhaumMidi cuisson(MidiNote_G);
 static DhaumMidi coq(MidiNote_B);
 
 // Binders
-DhaumBinder binders_data[] = {
+DhaumBinderConf binders_configuration[] = {
 
-  DhaumBinder(
+  DhaumBinderConf(
     chat | pelote,
     ronronnement
   ),
 
-  DhaumBinder(
+  DhaumBinderConf(
     casserole | chat,
     coup_de_casserole
   ),
 
-  DhaumBinder(
+  DhaumBinderConf(
     casserole | pelote,
     cuisson
   ),
 
-  DhaumBinder(
+  DhaumBinderConf(
     casserole | echelle,
     coq
   ),
 
-  DhaumBinder(
+  DhaumBinderConf(
     casserole | chat | pelote,
     nyan
    ),
 
 };
 
-uint16_t binders_size = (sizeof(binders_data)/sizeof(*binders_data));
-DhaumBinder * binders = binders_data;
+DhaumBinderData bindersd[sizeof(binders_configuration)/sizeof(*binders_configuration)];
+uint16_t binders_size = (sizeof(binders_configuration)/sizeof(*binders_configuration));
+DhaumBinderConf * binders_conf = binders_configuration;
+DhaumBinderData * binders_data = bindersd;
