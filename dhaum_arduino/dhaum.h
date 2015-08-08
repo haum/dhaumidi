@@ -4,6 +4,7 @@
 #include <Arduino.h>
 
 typedef uint32_t DhaumBits;
+typedef uint16_t DhaumBinderIndex;
 
 struct DhaumObject {
   DhaumBits bits;
@@ -54,6 +55,6 @@ struct DhaumBinderData {
 
 extern DhaumBinderConf * binders_conf;
 extern DhaumBinderData * binders_data;
-extern uint16_t binders_size;
+extern DhaumBinderIndex binders_size;
 
 #endif
