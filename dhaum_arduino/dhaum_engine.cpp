@@ -17,6 +17,7 @@ long long loop_rdv = 0;
 
 void print_hex(const char * const str, DhaumBits hex, bool predicat) {
   if (!predicat) return;
+  if (!Serial) return;
   Serial.print(str);
   Serial.println(hex, HEX);
 }
@@ -111,6 +112,5 @@ void loop() {
 
   // Flushes
   MIDIUSB.flush();
-  Serial.flush();
 }
 
