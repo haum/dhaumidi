@@ -8,7 +8,7 @@ typedef uint32_t DhaumBits;
 struct DhaumObject {
   DhaumBits bits;
   DhaumObject(uint8_t pad_nr) : bits(1 << (pad_nr-1)) {}
-  DhaumObject operator | (DhaumObject &other) {
+  DhaumObject operator | (const DhaumObject &other) {
     DhaumObject res(other);
     res.bits |= bits;
     return res;
