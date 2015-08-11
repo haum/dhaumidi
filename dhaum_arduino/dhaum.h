@@ -8,7 +8,7 @@ typedef uint16_t DhaumBinderIndex;
 
 struct DhaumObject {
   DhaumBits bits;
-  DhaumObject(uint8_t pad_nr) : bits(1 << (pad_nr-1)) {}
+  explicit DhaumObject(uint8_t pad_nr) : bits(1 << (pad_nr-1)) {}
   DhaumObject operator | (const DhaumObject &other) {
     DhaumObject res(other);
     res.bits |= bits;
