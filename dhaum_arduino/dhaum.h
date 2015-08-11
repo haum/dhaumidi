@@ -40,6 +40,7 @@ struct DhaumBinderConf {
   DhaumBits mask;
   DhaumMidi midi;
   DhaumBinderConf(DhaumObject obj, DhaumMidi param_midi, uint32_t param_mask = 0xffffffff) : bits(obj.bits), mask(param_mask), midi(param_midi) {}
+  DhaumBinderConf(DhaumBits param_bits, DhaumMidi param_midi, uint32_t param_mask = 0xffffffff) : bits(param_bits), mask(param_mask), midi(param_midi) {}
 };
 
 struct DhaumBinderData {
