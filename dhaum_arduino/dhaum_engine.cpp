@@ -11,7 +11,7 @@ uint8_t serial_debug = DEBUG_FILTERED_TOUCHES;
 
 long long loop_rdv = 0;
 
-#define PADSNB (sizeof(L)/sizeof(*L))
+#define PADSNB (12)
 #define BINDERNB (binders_size)
 #define MAXDEBOUNCE 3
 
