@@ -50,6 +50,7 @@ void setup() {
   pinMode(L24, OUTPUT);
 
   // Reset binders
+  init_binders();
   for (int i = 0; i < BINDERNB; ++i) {
     binders[i].setTouched(UNTOUCHED);
     binders[i].setDebounce(0);

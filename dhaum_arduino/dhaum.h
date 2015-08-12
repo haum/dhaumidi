@@ -40,6 +40,8 @@ struct DhaumBinder {
   DhaumMidi midi;
   int8_t debounce_t_tf; // debounce (6), touched (1), touched filtered (1) packing
 
+  DhaumBinder() : bits(-1), midi(DhaumMidi(MidiNote_C)) {}
+  DhaumBinder(DhaumBits param_bits, DhaumMidi param_midi) : bits(param_bits), midi(param_midi) {}
   DhaumBinder(DhaumObject obj, DhaumMidi param_midi) : bits(obj.bits), midi(param_midi) {}
   touchstatus_e touched() { return ((debounce_t_tf & 1) == 1) ? TOUCHED : UNTOUCHED; }
   touchstatus_e touchedFiltered() { return ((debounce_t_tf & 2) == 2) ? TOUCHED : UNTOUCHED; }
@@ -51,5 +53,6 @@ struct DhaumBinder {
 
 extern DhaumBinder * binders;
 extern DhaumBinderIndex binders_size;
+void init_binders();
 
 #endif
