@@ -1,7 +1,9 @@
 #ifndef DHAUM_H
 #define DHAUM_H
 
+#ifndef NO_ARDUINO
 #include <Arduino.h>
+#endif
 
 typedef uint32_t DhaumBits;
 typedef uint16_t DhaumBinderIndex;
