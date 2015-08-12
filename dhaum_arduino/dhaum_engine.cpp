@@ -104,5 +104,7 @@ void loop() {
     }
     binder_d.setDebounce(debounce);
   }
+
+  digitalWrite(L24, !digitalRead(L24));
 }
 
