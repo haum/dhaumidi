@@ -1,11 +1,9 @@
 #include "dhaum.h"
 
-#define MAX_BINDERS 102
-DhaumBinderData bindersd[MAX_BINDERS];
-DhaumBinderIndex binders_size = MAX_BINDERS;
-DhaumBinderData * binders_data = bindersd;
+DhaumBinder binders_data[102];
+DhaumBinder * binders = binders_data;
+DhaumBinderIndex binders_size = (sizeof(binders_data)/sizeof(*binders_data));
 
-// Sounds
 static const MidiNote notes7[] = { MidiNote_C, MidiNote_D, MidiNote_E, MidiNote_F, MidiNote_G, MidiNote_A, MidiNote_B };
 static const MidiNote notes12[] = { MidiNote_C, MidiNote_Cs, MidiNote_D, MidiNote_Ds, MidiNote_E, MidiNote_F, MidiNote_Fs, MidiNote_G, MidiNote_Gs, MidiNote_A, MidiNote_As, MidiNote_B };
 static const MidiOctave octaves[] = { MidiOctave_2,  MidiOctave_3,  MidiOctave_4,  MidiOctave_5 };
@@ -27,33 +25,36 @@ DhaumBits gen_combi(DhaumBinderIndex nb) {
   return 0;
 }
 
-DhaumBinderConf get_binderconf_nr(DhaumBinderIndex i) {
-  DhaumBits combi = gen_combi(i);
-  MidiChannel channel = MidiChannel_1;
-  MidiNote note = MidiNote_C;
-  MidiOctave octave = MidiOctave_2;
+void init_binders() {
+  for (DhaumBinderIndex i = 0; i < binders_size; ++i) {
+    DhaumBits combi = gen_combi(i);
+    MidiChannel channel = MidiChannel_1;
+    MidiNote note = MidiNote_C;
+    MidiOctave octave = MidiOctave_2;
 
-  if (i < 8) {
-    note = notes7[i % 7];
-    octave = octaves[(i < 7) + 1];
-    channel = MidiChannel_4;
-  } else if (i < 24) {
-    DhaumBinderIndex j = i-8;
-    note = notes12[j % 12];
-    octave = octaves[j / 12 + 1];
-    channel = MidiChannel_3;
-  } else if (i < 60) {
-    DhaumBinderIndex j = i-24;
-    note = notes12[j % 12];
-    octave = octaves[j / 12];
-    channel = MidiChannel_2;
-  } else {
-    DhaumBinderIndex j = i-60;
-    note = notes12[j % 12];
-    octave = octaves[j / 12];
+    if (i < 8) {
+      note = notes7[i % 7];
+      octave = octaves[(i < 7) + 1];
+      channel = MidiChannel_4;
+    } else if (i < 24) {
+      DhaumBinderIndex j = i-8;
+      note = notes12[j % 12];
+      octave = octaves[j / 12 + 1];
+      channel = MidiChannel_3;
+    } else if (i < 60) {
+      DhaumBinderIndex j = i-24;
+      note = notes12[j % 12];
+      octave = octaves[j / 12];
+      channel = MidiChannel_2;
+    } else {
+      DhaumBinderIndex j = i-60;
+      note = notes12[j % 12];
+      octave = octaves[j / 12];
+    }
+
+    DhaumMidi midi(note, octave, channel);
+    DhaumBinder binder(combi, midi);
+
+    binders[i] = binder;
   }
-
-  DhaumMidi midi(note, octave, channel);
-  DhaumBinderConf conf(combi, midi);
-  return conf;
 }

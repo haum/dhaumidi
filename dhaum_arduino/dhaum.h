@@ -37,17 +37,14 @@ typedef enum {
   TOUCHED,
 } touchstatus_e;
 
-struct DhaumBinderConf {
+struct DhaumBinder {
   DhaumBits bits;
-  DhaumBits mask;
   DhaumMidi midi;
-  DhaumBinderConf(DhaumObject obj, DhaumMidi param_midi, uint32_t param_mask = 0xffffffff) : bits(obj.bits), mask(param_mask), midi(param_midi) {}
-  DhaumBinderConf(DhaumBits param_bits, DhaumMidi param_midi, uint32_t param_mask = 0xffffffff) : bits(param_bits), mask(param_mask), midi(param_midi) {}
-};
-
-struct DhaumBinderData {
   int8_t debounce_t_tf; // debounce (6), touched (1), touched filtered (1) packing
-  DhaumBinderData() : debounce_t_tf(0) {}
+
+  DhaumBinder() : bits(-1), midi(DhaumMidi(MidiNote_C)) {}
+  DhaumBinder(DhaumBits param_bits, DhaumMidi param_midi) : bits(param_bits), midi(param_midi) {}
+  DhaumBinder(DhaumObject obj, DhaumMidi param_midi) : bits(obj.bits), midi(param_midi) {}
   touchstatus_e touched() { return ((debounce_t_tf & 1) == 1) ? TOUCHED : UNTOUCHED; }
   touchstatus_e touchedFiltered() { return ((debounce_t_tf & 2) == 2) ? TOUCHED : UNTOUCHED; }
   uint8_t getDebounce() { return (debounce_t_tf >> 2); }
@@ -56,9 +53,8 @@ struct DhaumBinderData {
   void setDebounce(int8_t debounce) { debounce_t_tf = (debounce_t_tf & 3) | (debounce << 2); }
 };
 
-extern DhaumBinderData * binders_data;
+extern DhaumBinder * binders;
 extern DhaumBinderIndex binders_size;
-
-DhaumBinderConf get_binderconf_nr(DhaumBinderIndex i);
+void init_binders();
 
 #endif
