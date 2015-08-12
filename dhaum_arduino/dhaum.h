@@ -40,17 +40,19 @@ typedef enum {
 struct DhaumBinder {
   DhaumBits bits;
   DhaumMidi midi;
-  int8_t debounce_t_tf; // debounce (6), touched (1), touched filtered (1) packing
+  int8_t debounce_t_tf; // debounce (5), touched filtered at least once since start (1), currently touched (1), currently touched filtered (1) packing
 
   DhaumBinder() : bits(-1), midi(DhaumMidi(MidiNote_C)) {}
   DhaumBinder(DhaumBits param_bits, DhaumMidi param_midi) : bits(param_bits), midi(param_midi) {}
   DhaumBinder(DhaumObject obj, DhaumMidi param_midi) : bits(obj.bits), midi(param_midi) {}
   touchstatus_e touched() { return ((debounce_t_tf & 1) == 1) ? TOUCHED : UNTOUCHED; }
   touchstatus_e touchedFiltered() { return ((debounce_t_tf & 2) == 2) ? TOUCHED : UNTOUCHED; }
-  uint8_t getDebounce() { return (debounce_t_tf >> 2); }
+  touchstatus_e touchedOnce() { return ((debounce_t_tf & 4) == 4) ? TOUCHED : UNTOUCHED; }
+  uint8_t getDebounce() { return (debounce_t_tf >> 3); }
   void setTouched(touchstatus_e touched) { debounce_t_tf = (debounce_t_tf & ~1) | (touched); }
   void setTouchedFiltered(touchstatus_e touched) { debounce_t_tf = (debounce_t_tf & ~2) | (touched << 1); }
-  void setDebounce(int8_t debounce) { debounce_t_tf = (debounce_t_tf & 3) | (debounce << 2); }
+  void setTouchedOnce(touchstatus_e touched) { debounce_t_tf = (debounce_t_tf & ~4) | (touched << 2); }
+  void setDebounce(int8_t debounce) { debounce_t_tf = (debounce_t_tf & 7) | (debounce << 3); }
 };
 
 extern DhaumBinder * binders;

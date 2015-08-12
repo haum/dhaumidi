@@ -5,11 +5,13 @@ enum serial_debug_flags {
   DEBUG_RAW_CODES = (1 << 1),
   DEBUG_FILTERx22 = (1 << 2),
   DEBUG_FILTERED_TOUCHES = (1 << 3),
+  DEBUG_UNFOUND = (1 << 4),
 };
 
-uint8_t serial_debug = DEBUG_FILTERED_TOUCHES;
+uint8_t serial_debug = DEBUG_UNFOUND | DEBUG_FILTERED_TOUCHES;
 
 long long loop_rdv = 0;
+DhaumBinderIndex nb_untouched_min;
 
 #define PADSNB (12)
 #define BINDERNB (binders_size)
@@ -55,7 +57,9 @@ void setup() {
     binders[i].setTouched(UNTOUCHED);
     binders[i].setDebounce(0);
     binders[i].setTouchedFiltered(UNTOUCHED);
+    binders[i].setTouchedOnce(UNTOUCHED);
   }
+  nb_untouched_min = BINDERNB;
 
   // Services begin
   Serial.begin(115200);
@@ -81,6 +85,7 @@ void loop() {
   print_hex("0==", 0, (serial_debug & DEBUG_RAW_CODES));
 
   // For each binder
+  DhaumBinderIndex nb_untouched = 0;
   for (DhaumBinderIndex i = 0; i < BINDERNB; ++i) {
     DhaumBinder & binder = binders[i];
 
@@ -102,6 +107,7 @@ void loop() {
     if (debounce == MAXDEBOUNCE && binder.touchedFiltered() == UNTOUCHED) {
       MIDIUSB.note(1, binder.midi.getNote(), binder.midi.getOctave(), binder.midi.getChannel(), binder.midi.getVelocity());
       binder.setTouchedFiltered(TOUCHED);
+      binder.setTouchedOnce(TOUCHED);
       print_hex("On ", binder.bits, (serial_debug & DEBUG_FILTERED_TOUCHES));
 
     } else if (debounce == 0 && binder.touchedFiltered() != UNTOUCHED) {
@@ -110,6 +116,16 @@ void loop() {
       print_hex("Off ", binder.bits, (serial_debug & DEBUG_FILTERED_TOUCHES));
     }
     binder.setDebounce(debounce);
+
+    if (binder.touchedOnce() == UNTOUCHED)
+      ++nb_untouched;
+  }
+
+  if (nb_untouched < nb_untouched_min) {
+    MIDIUSB.note(0, (MidiNote) nb_untouched_min, MidiOctave_m1, MidiChannel_5, 64);
+    nb_untouched_min = nb_untouched;
+    print_hex("Unfound = 0x", nb_untouched, (serial_debug & DEBUG_UNFOUND));
+    MIDIUSB.note(1, (MidiNote) nb_untouched_min, MidiOctave_m1, MidiChannel_5, 64);
   }
 
   // Wait for next loop
