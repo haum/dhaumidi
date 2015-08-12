@@ -71,7 +71,7 @@ void loop() {
     pinMode(L[i], INPUT);
     digitalWrite(L[i], LOW);
     notify_binders(pushed);
-    delay(1);
+    delayMicroseconds(250);
 
     // Debug raw codes
     print_hex("Code : ", pushed, ((serial_debug & DEBUG_RAW_CODES) && (pushed != (DhaumBits(1) << (i - 1)))));
@@ -113,8 +113,10 @@ void loop() {
   }
 
   // Wait for next loop
+  if (loop_rdv < millis() && Serial)
+    Serial.println("Underrun");
   while(loop_rdv > millis());
-  loop_rdv = millis() + 10;
+  loop_rdv = millis() + 20;
 
   // Blink at each loop
   digitalWrite(L24, !digitalRead(L24));
