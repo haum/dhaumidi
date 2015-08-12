@@ -47,6 +47,7 @@ void setup() {
     pinMode(L[i], INPUT);
     digitalWrite(L[i], LOW);
   }
+  pinMode(L24, OUTPUT);
 
   // Reset binders
   for (int i = 0; i < BINDERNB; ++i) {
@@ -113,6 +114,9 @@ void loop() {
   // Wait for next loop
   while(loop_rdv > millis());
   loop_rdv = millis() + 10;
+
+  // Blink at each loop
+  digitalWrite(L24, !digitalRead(L24));
 
   // Flushes
   MIDIUSB.flush();
