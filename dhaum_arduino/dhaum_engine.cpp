@@ -35,7 +35,7 @@ DhaumBits get_pads_snapshot() {
 void notify_binders(DhaumBits pushed) {
   for (DhaumBinderIndex i = 0; i < BINDERNB; ++i) {
     DhaumBinder & binder = binders[i];
-    touchstatus_e touched = ((binder.bits & binder.mask) == (pushed & binder.mask)) ? TOUCHED : UNTOUCHED;
+    touchstatus_e touched = (binder.bits == pushed) ? TOUCHED : UNTOUCHED;
     if (touched == TOUCHED)
       binder.setTouched(TOUCHED);
   }
