@@ -57,8 +57,9 @@ enum MidiChannel {
 using namespace std;
 
 int main() {
+	init_binders();
 	for (DhaumBinderIndex i = 0; i < binders_size; ++i) {
-		DhaumBinderConf comb = get_binderconf_nr(i);
+		DhaumBinder comb = binders[i];
 		cout << "::";
 
 		DhaumBits bits = comb.bits;
