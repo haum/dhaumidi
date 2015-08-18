@@ -26,7 +26,7 @@ void print_hex(const char * const str, DhaumBits hex, bool predicat) {
 
 DhaumBits get_pads_snapshot() {
   DhaumBits snapshot = 0, curbit = 1;
-  for (int i = 1; i < PADSNB; ++i) {
+  for (int i = 1; i <= PADSNB; ++i) {
     if (!digitalRead(L[i]))
       snapshot |= curbit;
     curbit <<= 1;
@@ -45,7 +45,7 @@ void notify_binders(DhaumBits pushed) {
 
 void setup() {
   // Reset pads
-  for (int i = 0; i < PADSNB; ++i) {
+  for (int i = 0; i <= PADSNB; ++i) {
     pinMode(L[i], INPUT);
     digitalWrite(L[i], LOW);
   }
@@ -67,7 +67,7 @@ void setup() {
 
 void loop() {
   // For each pad
-  for (int i = 1; i < PADSNB; ++i) {
+  for (int i = 1; i <= PADSNB; ++i) {
     // Get snapshot of pads (with ith activated) and update binders' status
     pinMode(L[i], OUTPUT);
     DhaumBits pushed = get_pads_snapshot();
