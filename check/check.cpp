@@ -52,7 +52,7 @@ enum MidiChannel {
 };
 
 #define NO_ARDUINO
-#include "dhaum_arduino/dhaum_arduino.ino" // OK, thats ugly
+#include "../dhaum_arduino/dhaum_arduino.ino" // OK, thats ugly
 
 using namespace std;
 
